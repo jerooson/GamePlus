@@ -22,7 +22,7 @@ public class TwitchClient {
     private static final String CLIENT_ID = "fb8txlz2jq80vhvcu5eo6ka8kdq4s9";
     private static final String TOP_GAME_URL = "https://api.twitch.tv/helix/games/top?first=%s";
     private static final String GAME_SEARCH_URL_TEMPLATE = "https://api.twitch.tv/helix/games?name=%s";
-    private static final int DEFAULT_GAME_LIMIT = 20;
+    private static final int DEFAULT_GAME_LIMIT = 10;
 
     private String buildGameURL(String url, String gameName, int limit) {
         if (gameName.equals("")) {
