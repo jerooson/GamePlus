@@ -44,7 +44,13 @@ public class FavoriteServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String userId = request.getParameter("user_id");
+        // Check if the session is still valid, which means the user has been logged in successfully.
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+        String userId = (String) session.getAttribute("user_id");
         ObjectMapper mapper = new ObjectMapper();
         FavoriteRequestBody body = mapper.readValue(request.getReader(), FavoriteRequestBody.class);
         if (body == null) {
@@ -68,15 +74,19 @@ public class FavoriteServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String userId = request.getParameter("user_id");
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+        String userId = (String) session.getAttribute("user_id");
         Map<String, List<Item>> itemMap;
         MySQLConnection connection = null;
         try {
             // Read the favorite items from the database
             connection = new MySQLConnection();
             itemMap = connection.getFavoriteItems(userId);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print(new ObjectMapper().writeValueAsString(itemMap));
+            ServletUtil.writeItemMap(response, itemMap);
         } catch (MySQLException e) {
             throw new ServletException(e);
         } finally {
